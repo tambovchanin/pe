@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "out": "./build/pe.js",
+    "module": "amd",
+    "target": "es5",
+    "sourceMap": true,
+    "composite": true,
+    "declaration": true,
+    "inlineSources": true,
+    "removeComments": true,
+    "preserveConstEnums": true
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
