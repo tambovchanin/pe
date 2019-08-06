@@ -89,6 +89,21 @@ module pe.io {
       return result;
     }
 
+    readBuffer(offset: number = 0, length: number): Uint8Array {
+      let _offset = this.offset;
+
+      this.offset = offset;
+
+      var v = this._getView(length);
+      var result = new Uint8Array(
+        v.buffer,
+        v.byteOffset + this.offset,
+        length);
+
+      this.offset = _offset;
+      return result;
+    }
+
     readZeroFilledAscii(length: number) {
       var v = this._getView(length);
       var chars = [];

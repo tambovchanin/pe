@@ -31,9 +31,6 @@ module pe.headers {
     toString() { return this.address.toString(16).toUpperCase() + ":" + this.size.toString(16).toUpperCase() + "@" + this.virtualAddress + "h"; }
   }
 
-  
-  
-  
   export class SectionHeader extends AddressRangeMap {
 
     static intSize = 16;
@@ -80,6 +77,12 @@ module pe.headers {
     numberOfLinenumbers: number = 0;
 
     /**
+     * Entropy of sections
+     * From this sources https://github.com/erocarrera/pefile/blob/master/pefile.py#L1297
+     */
+    entropy: number = 0;
+
+    /**
      * The characteristics of the image.
      */
     characteristics: SectionCharacteristics = SectionCharacteristics.ContainsCode;
@@ -101,7 +104,7 @@ module pe.headers {
 
       var sizeOfRawData = reader.readInt();
       var pointerToRawData = reader.readInt();
-      
+
       this.size = sizeOfRawData;
       this.address = pointerToRawData;
 
@@ -110,8 +113,23 @@ module pe.headers {
       this.numberOfRelocations = reader.readShort();
       this.numberOfLinenumbers = reader.readShort();
       this.characteristics = <SectionCharacteristics>reader.readInt();
+
+      const buf = reader.readBuffer(pointerToRawData, sizeOfRawData);
+
+      const index: any = {};
+
+      buf.forEach(val => {
+        index[val] ? ++index[val] : index[val] = 1;
+      });
+
+      let entropy: number = 0
+
+      for(let x in index) {
+        let p_x = index[x] / sizeOfRawData;
+        entropy -= p_x * Math.log2(p_x);
+      }
+
+      this.entropy = entropy
     }
-
   }
-
 }

@@ -1066,6 +1066,7 @@ var pe;
                 _this.pointerToLinenumbers = 0;
                 _this.numberOfRelocations = 0;
                 _this.numberOfLinenumbers = 0;
+                _this.entropy = 0;
                 _this.characteristics = headers.SectionCharacteristics.ContainsCode;
                 return _this;
             }
@@ -1086,6 +1087,17 @@ var pe;
                 this.numberOfRelocations = reader.readShort();
                 this.numberOfLinenumbers = reader.readShort();
                 this.characteristics = reader.readInt();
+                var buf = reader.readBuffer(pointerToRawData, sizeOfRawData);
+                var index = {};
+                buf.forEach(function (val) {
+                    index[val] ? ++index[val] : index[val] = 1;
+                });
+                var entropy = 0;
+                for (var x in index) {
+                    var p_x = index[x] / sizeOfRawData;
+                    entropy -= p_x * Math.log2(p_x);
+                }
+                this.entropy = entropy;
             };
             SectionHeader.intSize = 16;
             return SectionHeader;
@@ -1162,6 +1174,15 @@ var pe;
                 var v = this._getView(length);
                 var result = new Uint8Array(v.buffer, v.byteOffset + this.offset, length);
                 this.offset += length;
+                return result;
+            };
+            BufferReader.prototype.readBuffer = function (offset, length) {
+                if (offset === void 0) { offset = 0; }
+                var _offset = this.offset;
+                this.offset = offset;
+                var v = this._getView(length);
+                var result = new Uint8Array(v.buffer, v.byteOffset + this.offset, length);
+                this.offset = _offset;
                 return result;
             };
             BufferReader.prototype.readZeroFilledAscii = function (length) {

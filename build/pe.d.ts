@@ -566,6 +566,7 @@ declare module pe.headers {
         pointerToLinenumbers: number;
         numberOfRelocations: number;
         numberOfLinenumbers: number;
+        entropy: number;
         characteristics: SectionCharacteristics;
         constructor();
         toString(): string;
@@ -587,6 +588,7 @@ declare module pe.io {
         readInt(): number;
         readLong(): Long;
         readBytes(length: number): Uint8Array;
+        readBuffer(offset: number, length: number): Uint8Array;
         readZeroFilledAscii(length: number): string;
         readAsciiZ(maxLength?: number): string;
         readUtf8Z(maxLength: number): string;
